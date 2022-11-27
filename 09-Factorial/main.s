@@ -1,4 +1,5 @@
 @ Program 9: Factorials
+@ https://www.armasm.com/docs/arithmetic/factorial/
 @
 @ The two “standard” recursion formulas used in programming are the Fibonacci 
 @ series and factorials. Write a program that calculates 9! and prints the 

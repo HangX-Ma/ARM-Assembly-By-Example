@@ -1,22 +1,3 @@
-@ Program 8: ITOA
-@ https://www.armasm.com/docs/arithmetic/itoa/
-@
-@ If you are going to print numbers to stdout, you need to come up with a way 
-@ to convert those numbers into an ASCII representation. For now, just worry 
-@ about unsigned numbers.
-@ 
-@ Write a program that loads the number 209867295 and writes it to stdout.
-
-@ Register:
-@       r4: output string address
-@       r5: number to process
-@       r6: current 10^x
-@       r7: current power (x from above) 
-@       r8: loop counter
-
-@ input number 
-.equ    basenum, 209867295
-
 @   pow macro 
 @   
 @   r0:     base 
@@ -47,11 +28,34 @@
     mov     r0, r2          @ move result to r0
 .endm
 
-.global _start 
+@   I to A 
+@
+@   Input:
+@       r0: Number to convert 
+@       r1: Address to save string to. 
+@           Space needs to be at least 11 bytes 
+@           Also appends \n to end of number 
+@   Output: 
+@       None - Output saved directly to memory provided in r1 
+@
+@ Register Used:
+@       r1, r2: pow, not saved  
+@       r4: output string address
+@       r5: number to process
+@       r6: current 10^x
+@       r7: current power (x from above) 
+@       r8: loop counter
+@       r9: initial address 
 
-_start: 
-    ldr     r4, =outstr     @ load outstr address
-    ldr     r5, =basenum    @ load number to process
+
+.global itoa 
+
+itoa:
+    push    {r4-r9}         @ save registers we will use 
+
+    mov     r4, r1          @ load outstr address
+    mov     r9, r1          @ copy outstr to r9 
+    mov     r5, r0          @ load number to process
                             @ because it's larger than an immediate, we 
                             @ use the pseudo instruction like this 
     mov     r7, #9          @ Initial power of 10 
@@ -90,17 +94,7 @@ exit:
     mov     r8, #'\n'       @ load line ending for output str 
     strb    r8, [r4]        @ store to output. no need to increment  
 
-    @ setup write call 
-    mov     r7, #4          @ 4 = write
-    mov     r0, #1          @ 1 = stdout 
-    ldr     r1, =outstr     @ load outstr address 
-    mov     r2, #11         @ 11 = max length 
-    svc     0 
+    mov     r1, r9          @ put address back in r1
 
-    @ setup exit call 
-    mov     r7, #1          @ 1 = exit 
-    mov     r0, #0          @ 0 = no error 
-    svc     0
-.data
-outstr:     .fill 11        @ the max output size is 10 digits 
-                            @ 11 for line ending
+    pop     {r4-r9}         @ restore registers 
+    bx      lr              @ return to calling fn 

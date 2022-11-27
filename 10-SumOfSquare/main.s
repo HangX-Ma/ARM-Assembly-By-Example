@@ -1,5 +1,6 @@
 @ Program 10: Sum of Squares
-@
+@ https://www.armasm.com/docs/arithmetic/sum-of-squares/
+
 @ You are given a list of numbers. Iterate through the numbers, squaring them, 
 @ and then creating a sum of the squared numbers.
 @ 
